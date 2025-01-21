@@ -1,10 +1,11 @@
 import { IoChatbox } from "react-icons/io5";
 import { IoIosCloseCircleOutline } from "react-icons/io";
-import { useState, useEffect, useRef } from 'react';
-import Chatbot from './components/Chatbot';
+import { useState, useEffect, useRef } from "react";
+import Chatbot from "./components/Chatbot";
 
 const App = () => {
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
+  const [isShaking, setIsShaking] = useState(false);
   const modalRef = useRef(null);
 
   const toggleChatbot = () => {
@@ -17,10 +18,18 @@ const App = () => {
         setIsChatbotOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsShaking(true);
+      setTimeout(() => setIsShaking(false), 1000);
+    }, 3000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -29,7 +38,9 @@ const App = () => {
 
       <button
         onClick={toggleChatbot}
-        className="fixed bottom-4 right-4 flex items-center justify-center w-16 h-16 rounded-full bg-blue-500 text-white shadow-lg hover:bg-blue-600"
+        className={`fixed bottom-4 right-4 flex items-center justify-center w-16 h-16 rounded-full bg-blue-500 text-white shadow-lg hover:bg-blue-600 ${
+          isShaking ? "animate-shake" : ""
+        }`}
       >
         <IoChatbox fontSize="1.5rem" />
       </button>
@@ -45,7 +56,7 @@ const App = () => {
               onClick={toggleChatbot}
               className="text-white bg-blue-400 hover:bg-blue-600 rounded-full w-8 h-8 flex items-center justify-center"
             >
-              <IoIosCloseCircleOutline/>
+              <IoIosCloseCircleOutline />
             </button>
           </div>
 

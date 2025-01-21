@@ -16,7 +16,7 @@ const Chatbot = () => {
       toast.error('Please enter a message or upload a file.');
       return;
     }
-
+  
     setIsLoading(true);
     try {
       const formData = new FormData();
@@ -24,26 +24,34 @@ const Chatbot = () => {
       if (file) {
         formData.append('file', file);
       }
-
+  
       const { data } = await axios.post(BOT_ENDPOINT.CHAT_WITH_BOT, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-
+  
       setConversation([
         ...conversation,
         ...(message ? [{ role: 'user', content: message }] : []),
         { role: 'assistant', content: data.response },
       ]);
-
+  
       setMessage('');
       setFile(null);
       setFilePreview('');
     } catch (error) {
+      if (error.response && error.response.data && error.response.data.message) {
+        toast.error(`Error: ${error.response.data.message}`);
+      } else if (error.message) {
+        toast.error(`Error: ${error.message}`);
+      } else {
+        toast.error('An unexpected error occurred. Please try again.');
+      }
       console.error('Error sending message or file:', error);
     } finally {
       setIsLoading(false);
     }
   };
+  
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
